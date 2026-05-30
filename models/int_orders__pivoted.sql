@@ -1,12 +1,12 @@
-{%  set payment_methods=['credit_card', 'bank_transfer', 'coupon', 'gift_card'] %}
-
-with payments as 
-(
+with payments as (
     select * from {{ ref('stg_stripe__payments') }}
     where status = 'success'
 ),
 
 pivoted as (
+
+    {%  set payment_methods=['credit_card', 'bank_transfer', 'coupon', 'gift_card'] %}
+
     select
         order_id,
         {% for method in payment_methods %}
@@ -15,6 +15,7 @@ pivoted as (
         {% endfor %}
     from payments
     group by 1
+    
 )
 
 select * from pivoted
